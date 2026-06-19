@@ -15,7 +15,7 @@
   const easeOut = v => 1 - Math.pow(1 - v, 3);
   const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
   function spawnOrbiter(ang){ orbiters.push({ ang, kr: 1.02 + Math.random() * 0.30, sp: (Math.random() < 0.5 ? -1 : 1) * (0.5 + Math.random() * 1.1), col: Math.random() < 0.6 ? '#ED2024' : '#ffffff', size: 1.6 + Math.random() * 1.5, life: 1 }); }
-  let BOOT = 1900, timers = [];
+  let BOOT = 1900, H1_AT = 820, timers = [];   // H1_AT — H1 проявляется рано, сразу после прелоадера (терминал ещё бежит)
   const mouse = { x: -9999, y: -9999, on: false };
   const rand = (a, b) => a + Math.random() * (b - a), sign = n => n < 0 ? -1 : 1, clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
@@ -150,7 +150,7 @@
       ctx.drawImage(photo, dx0, dy0, pw, ph);
       ctx.filter = 'none';
       // фирменный красно-голубой глитч на фото иллюминатора (заменил бегавшие частицы): смещённые полосы фото + красный/голубой канал
-      if (!REDUCED){ const gp = (now % 2600) / 2600; if (gp < 0.12){ const inten = 1 - gp / 0.12, bands = 2 + (Math.random() * 3 | 0); for (let i = 0; i < bands; i++){ const by = n.y - pr + Math.random() * pr * 2, bh = 3 + Math.random() * pr * 0.2, sh = (Math.random() * 2 - 1) * pr * 0.14 * inten, col = Math.random() < 0.5 ? ACC : '#33aadd'; ctx.save(); ctx.beginPath(); ctx.rect(n.x - pr, by, pr * 2, bh); ctx.clip(); ctx.globalAlpha = aIn; ctx.filter = 'grayscale(1)'; ctx.drawImage(photo, dx0 + sh, dy0, pw, ph); ctx.filter = 'none'; ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = aIn * 0.5 * inten; ctx.fillStyle = col; ctx.fillRect(n.x - pr, by, pr * 2, bh); ctx.restore(); } } }
+      if (!REDUCED){ const gp = (now % 2600) / 2600; if (gp < 0.12){ const inten = 1 - gp / 0.12, bands = 2 + (Math.random() * 3 | 0); for (let i = 0; i < bands; i++){ const by = n.y - pr + Math.random() * pr * 2, bh = 3 + Math.random() * pr * 0.2, sh = (Math.random() * 2 - 1) * pr * 0.14 * inten, col = Math.random() < 0.62 ? ACC : '#3ae07a'; ctx.save(); ctx.beginPath(); ctx.rect(n.x - pr, by, pr * 2, bh); ctx.clip(); ctx.globalAlpha = aIn; ctx.filter = 'grayscale(1)'; ctx.drawImage(photo, dx0 + sh, dy0, pw, ph); ctx.filter = 'none'; ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = aIn * 0.5 * inten; ctx.fillStyle = col; ctx.fillRect(n.x - pr, by, pr * 2, bh); ctx.restore(); } } }
       const sw = time * 0.6; ctx.globalAlpha = aIn * e * 0.15; ctx.strokeStyle = ACC; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(n.x + Math.cos(sw) * pr, n.y + Math.sin(sw) * pr); ctx.stroke();
       ctx.globalAlpha = aIn * e * 0.6; ctx.beginPath(); ctx.arc(n.x + Math.cos(sw) * pr * 0.94, n.y + Math.sin(sw) * pr * 0.94, 2, 0, 6.2832); ctx.fillStyle = ACC; ctx.fill();
       ctx.restore(); ctx.globalAlpha = aIn;
@@ -188,7 +188,9 @@
     clearTimers(); term.innerHTML = ''; term.classList.remove('hide'); heroContent.classList.remove('show'); title.classList.remove('glitch');
     introStart = 0; compose(); let delay = 0;
     LINES.forEach(pair => { const row = document.createElement('div'); term.appendChild(row); timers.push(setTimeout(() => { type(row, pair[0], 16, () => { if (pair[1]){ const ok = document.createElement('span'); ok.className = 'ok'; row.appendChild(ok); type(ok, pair[1], 28); } }); }, delay)); delay += 380; });
-    timers.push(setTimeout(() => { term.classList.add('hide'); heroContent.classList.add('show'); document.querySelectorAll('.hero .ln[data-text]').forEach(scramble); timers.push(setTimeout(() => title.classList.add('glitch'), 700)); timers.push(setTimeout(() => title.classList.remove('glitch'), 1100)); }, BOOT + 120));
+    // H1 появляется РАНО (сразу после прелоадера) — терминал НЕ прячем вместе с ним, пусть HUD-надписи добегают снизу
+    timers.push(setTimeout(() => { heroContent.classList.add('show'); document.querySelectorAll('.hero .ln[data-text]').forEach(scramble); timers.push(setTimeout(() => title.classList.add('glitch'), 700)); timers.push(setTimeout(() => title.classList.remove('glitch'), 1100)); }, H1_AT));
+    timers.push(setTimeout(() => term.classList.add('hide'), BOOT + 120));   // терминал добегает свои строки и прячется позже
   }
   function resize(){ DPR = Math.min(devicePixelRatio || 1, 2); W = heroSec.clientWidth; H = heroSec.clientHeight; mobile = W <= 860; cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px'; ctx.setTransform(DPR, 0, 0, DPR, 0, 0); compose(); }
   setInterval(() => { if (heroContent.classList.contains('show') && Math.random() < 0.5){ title.classList.add('glitch'); setTimeout(() => title.classList.remove('glitch'), 240); } }, 3400);
