@@ -90,7 +90,7 @@
   .hero h1 .accent{color:var(--accent)}
   h1.glitch .ln::before,h1.glitch .ln::after{content:attr(data-text);position:absolute;left:0;top:0;width:100%;clip-path:inset(0 0 0 0);pointer-events:none}
   h1.glitch .ln::before{color:var(--accent);left:2px;animation:gl1 .4s steps(2) infinite}
-  h1.glitch .ln::after{color:#3ae07a;left:-2px;animation:gl2 .4s steps(2) infinite}
+  h1.glitch .ln::after{color:#4a7d63;left:-2px;animation:gl2 .4s steps(2) infinite}
   @keyframes gl1{0%{clip-path:inset(0 0 78% 0);transform:translate(2px,-1px)}50%{clip-path:inset(60% 0 8% 0);transform:translate(-2px,1px)}100%{clip-path:inset(20% 0 50% 0);transform:translate(1px,0)}}
   @keyframes gl2{0%{clip-path:inset(70% 0 6% 0);transform:translate(-2px,1px)}50%{clip-path:inset(10% 0 70% 0);transform:translate(2px,-1px)}100%{clip-path:inset(40% 0 30% 0);transform:translate(-1px,0)}}
   .hero .lede{color:var(--muted);font-size:calc(var(--u)*1.1);line-height:1.6;max-width:44ch;margin:calc(var(--u)*1.5) 0 0;text-shadow:0 0 22px var(--bg)}
