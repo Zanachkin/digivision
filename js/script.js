@@ -1,4 +1,4 @@
-/* ═════════ HERO: канвас-движок (дерево слияний → хаб) ═════════ */
+
 (() => {
   const root = document.documentElement, heroSec = document.getElementById('hero');
   const cv = document.getElementById('net'), ctx = cv.getContext('2d');
@@ -10,12 +10,12 @@
   let W, H, DPR, mobile = false, rings = [], traces = [], primary = [], pulses = [];
   let introStart = 0, INTRO = 1700;
   let portRing = null, phA = 0, ripples = [], orbiters = [];
-  let regenning = false, regenT0 = 0; const REGEN = 1500;   // регенерация трасс по клику (хаб остаётся)
+  let regenning = false, regenT0 = 0; const REGEN = 1500;
   const photo = new Image(); photo.src = 'img/DSC04498-a.jpg';
   const easeOut = v => 1 - Math.pow(1 - v, 3);
   const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
   function spawnOrbiter(ang){ orbiters.push({ ang, kr: 1.02 + Math.random() * 0.30, sp: (Math.random() < 0.5 ? -1 : 1) * (0.5 + Math.random() * 1.1), col: Math.random() < 0.6 ? '#ED2024' : '#ffffff', size: 1.6 + Math.random() * 1.5, life: 1 }); }
-  let BOOT = 1900, H1_AT = 820, timers = [];   // H1_AT — H1 проявляется рано, сразу после прелоадера (терминал ещё бежит)
+  let BOOT = 1900, H1_AT = 820, timers = [];
   const mouse = { x: -9999, y: -9999, on: false };
   const rand = (a, b) => a + Math.random() * (b - a), sign = n => n < 0 ? -1 : 1, clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
@@ -32,8 +32,8 @@
     rings = []; traces = []; primary = []; pulses = []; portRing = null; phA = 0;
     unit = Math.min(W, H) / 100; const u = unit;
     const hub = mobile
-      ? { x: W * 0.50, y: H * 0.72, r: u * 3.0, r0: u * 3.0, r1: clamp(u * 40, 160, 240), primary: true, porthole: true, glow: 0, red: false, delay: 0.3 }   // на мобильном — по центру, НИЖЕ заголовка и заметно крупнее
-      : { x: W * 0.70, y: H * 0.45, r: u * 3.0, r0: u * 3.0, r1: clamp(u * 28, 220, 440), primary: true, porthole: true, glow: 0, red: false, delay: 0.3 };   // иллюминатор-хаб крупнее (было u*21/170..320)
+      ? { x: W * 0.50, y: H * 0.72, r: u * 3.0, r0: u * 3.0, r1: clamp(u * 40, 160, 240), primary: true, porthole: true, glow: 0, red: false, delay: 0.3 }
+      : { x: W * 0.70, y: H * 0.45, r: u * 3.0, r0: u * 3.0, r1: clamp(u * 28, 220, 440), primary: true, porthole: true, glow: 0, red: false, delay: 0.3 };
     rings.push(hub); primary.push(hub); portRing = hub; ripples = [];
     const RE = hub.x + hub.r0, R0 = hub.r0, PAD = u * 1.1;
     const joint = (jx, jy, dim) => { rings.push({ x: jx, y: jy, r: 2.2, joint: true, dim: !!dim, glow: 0, red: false, delay: rand(0.2, 0.5), primary: false }); };
@@ -94,13 +94,13 @@
   function frame(now){
     if (!introStart) introStart = now;
     const t = Math.min(1, (now - introStart) / INTRO), C = palette();
-    // прогресс отрисовки трасс/колец: при регенерации идёт по своему таймеру (из центра), хаб остаётся на t
+
     let prog = t;
     if (regenning){ if (!regenT0) regenT0 = now; prog = Math.min(1, (now - regenT0) / REGEN); if (prog >= 1){ regenning = false; regenT0 = 0; } }
     ctx.clearRect(0, 0, W, H); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     ctx.globalAlpha = 1;
     for (const tr of traces){ const f = clamp((prog - tr.delay) / 0.2, 0, 1); if (f <= 0) continue; ctx.strokeStyle = tr.red ? ACC : (tr.bold ? C.bold : C.bg); ctx.lineWidth = tr.red ? 2.4 : (tr.bold ? 2.7 : 1.5); if (f < 1){ if (tr.bold){ ctx.shadowColor = C.bold; ctx.shadowBlur = 8; } strokeUpTo(tr, tr.total * f); ctx.shadowBlur = 0; } else strokeFull(tr); }
-    if (portRing){ const over = mobile || (mouse.on && (mouse.x - portRing.x) ** 2 + (mouse.y - portRing.y) ** 2 < (portRing.r + 16) ** 2); phA += ((over ? 1 : 0) - phA) * 0.07; portRing.r = portRing.r0 + (portRing.r1 - portRing.r0) * easeOut(phA); }   // на мобильном хаб раскрыт всегда (нет hover)
+    if (portRing){ const over = mobile || (mouse.on && (mouse.x - portRing.x) ** 2 + (mouse.y - portRing.y) ** 2 < (portRing.r + 16) ** 2); phA += ((over ? 1 : 0) - phA) * 0.07; portRing.r = portRing.r0 + (portRing.r1 - portRing.r0) * easeOut(phA); }
     for (const n of rings){
       if (n.porthole) continue;
       if (n.joint){ const apj = clamp((prog - n.delay - 0.05) / 0.2, 0, 1); n.glow *= 0.92; const aj = Math.max(apj, n.glow); if (aj <= 0.02) continue; ctx.globalAlpha = n.dim ? aj * 0.4 : aj; ctx.beginPath(); ctx.arc(n.x, n.y, (n.dim ? 1.8 : 2.4) + n.glow * 2, 0, 6.2832); ctx.fillStyle = n.dim ? C.ring : C.bold; ctx.fill(); if (n.glow > 0.05){ ctx.beginPath(); ctx.arc(n.x, n.y, 4 + n.glow * 7, 0, 6.2832); ctx.strokeStyle = ACC; ctx.lineWidth = 1.4; ctx.globalAlpha = n.glow; ctx.stroke(); } ctx.globalAlpha = 1; continue; }
@@ -149,7 +149,7 @@
       const pw = photo.naturalWidth * sc, ph = photo.naturalHeight * sc, dx0 = n.x - pw / 2, dy0 = n.y - ph / 2;
       ctx.drawImage(photo, dx0, dy0, pw, ph);
       ctx.filter = 'none';
-      // фирменный красно-голубой глитч на фото иллюминатора (заменил бегавшие частицы): смещённые полосы фото + красный/голубой канал
+
       if (!REDUCED){ const gp = (now % 2600) / 2600; if (gp < 0.12){ const inten = 1 - gp / 0.12, bands = 2 + (Math.random() * 3 | 0); for (let i = 0; i < bands; i++){ const by = n.y - pr + Math.random() * pr * 2, bh = 3 + Math.random() * pr * 0.2, sh = (Math.random() * 2 - 1) * pr * 0.14 * inten, col = Math.random() < 0.62 ? ACC : '#4a7d63'; ctx.save(); ctx.beginPath(); ctx.rect(n.x - pr, by, pr * 2, bh); ctx.clip(); ctx.globalAlpha = aIn; ctx.filter = 'grayscale(1)'; ctx.drawImage(photo, dx0 + sh, dy0, pw, ph); ctx.filter = 'none'; ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = aIn * 0.5 * inten; ctx.fillStyle = col; ctx.fillRect(n.x - pr, by, pr * 2, bh); ctx.restore(); } } }
       const sw = time * 0.6; ctx.globalAlpha = aIn * e * 0.15; ctx.strokeStyle = ACC; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(n.x + Math.cos(sw) * pr, n.y + Math.sin(sw) * pr); ctx.stroke();
       ctx.globalAlpha = aIn * e * 0.6; ctx.beginPath(); ctx.arc(n.x + Math.cos(sw) * pr * 0.94, n.y + Math.sin(sw) * pr * 0.94, 2, 0, 6.2832); ctx.fillStyle = ACC; ctx.fill();
@@ -188,9 +188,9 @@
     clearTimers(); term.innerHTML = ''; term.classList.remove('hide'); heroContent.classList.remove('show'); title.classList.remove('glitch');
     introStart = 0; compose(); let delay = 0;
     LINES.forEach(pair => { const row = document.createElement('div'); term.appendChild(row); timers.push(setTimeout(() => { type(row, pair[0], 16, () => { if (pair[1]){ const ok = document.createElement('span'); ok.className = 'ok'; row.appendChild(ok); type(ok, pair[1], 28); } }); }, delay)); delay += 380; });
-    // H1 появляется РАНО (сразу после прелоадера) — терминал НЕ прячем вместе с ним, пусть HUD-надписи добегают снизу
+
     timers.push(setTimeout(() => { heroContent.classList.add('show'); document.querySelectorAll('.hero .ln[data-text]').forEach(scramble); timers.push(setTimeout(() => title.classList.add('glitch'), 700)); timers.push(setTimeout(() => title.classList.remove('glitch'), 1100)); }, H1_AT));
-    timers.push(setTimeout(() => term.classList.add('hide'), BOOT + 120));   // терминал добегает свои строки и прячется позже
+    timers.push(setTimeout(() => term.classList.add('hide'), BOOT + 120));
   }
   function resize(){ DPR = Math.min(devicePixelRatio || 1, 2); W = heroSec.clientWidth; H = heroSec.clientHeight; mobile = W <= 860; cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px'; ctx.setTransform(DPR, 0, 0, DPR, 0, 0); compose(); }
   setInterval(() => { if (heroContent.classList.contains('show') && Math.random() < 0.5){ title.classList.add('glitch'); setTimeout(() => title.classList.remove('glitch'), 240); } }, 3400);
@@ -199,9 +199,9 @@
   heroSec.addEventListener('mouseleave', () => mouse.on = false);
   heroSec.addEventListener('click', e => {
     const r = heroSec.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
-    // клик по хабу (фото) → перегенерация всей схемы трасс, каждый раз по-новому (как при загрузке)
+
     if (portRing && Math.hypot(x - portRing.x, y - portRing.y) < portRing.r + 26){
-      const ph = phA; compose(); phA = ph; regenning = true; regenT0 = 0; return;   // линии заново из центра, хаб/фото на месте
+      const ph = phA; compose(); phA = ph; regenning = true; regenT0 = 0; return;
     }
     const { n, d } = nearestPrimary(x, y); if (n && d < 480){ n.glow = 1; traces.filter(t => t.ring === n).forEach(t => spawnPulse(t)); }
   });
@@ -209,14 +209,12 @@
   resize(); requestAnimationFrame(frame); runBoot();
 })();
 
-/* ═════════ header scrolled + reveal + бургер-меню ═════════ */
 (() => {
   const hd = document.getElementById('hd');
   addEventListener('scroll', () => hd.classList.toggle('scrolled', scrollY > 40), { passive: true });
   const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.16 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-  // мобильное меню: бургер ↔ крест на том же месте
   const burger = document.getElementById('burger'), mm = document.getElementById('mobileMenu');
   if (burger && mm){
     const setMenu = open => {
@@ -231,7 +229,6 @@
   }
 })();
 
-/* ═════════ AUDIO PLAYER ═════════ */
 (() => {
   const TRACKS = [
     { t: 'You and me',       g: 'Invariant',   cov: 'img/Invariant.webp',   src: 'mp3/Invariant - You and me.mp3' },
@@ -297,7 +294,6 @@
   function clamp01(v){ return Math.max(0, Math.min(1, v)); }
 })();
 
-/* ═════════ МЕТОД: живая схема-плата (SVG-трасса + бегущий сигнал) ═════════ */
 (() => {
   const method = document.querySelector('.method'); if (!method) return;
   const NS = 'http://www.w3.org/2000/svg';
@@ -317,9 +313,9 @@
     pinX.length = 0;
     const cs = pins.map(p => { const r = p.getBoundingClientRect(); pinX.push(r.left - cr.left + r.width / 2); return { x: r.left - cr.left + r.width / 2, y: r.top - cr.top + r.height / 2 }; });
     const y = cs.length ? cs[0].y : 14, j = 9;
-    const pts = [];                                  // старт от первого кольца, без левого края
+    const pts = [];
     cs.forEach((c, i) => { pts.push([c.x, y]); if (i < cs.length - 1){ const mid = (c.x + cs[i + 1].x) / 2, dir = i % 2 ? 1 : -1; pts.push([mid - j, y], [mid, y + dir * j], [mid + j, y]); } });
-    // линия кончается на последнем кольце («Релиз»), без продления до края — дальше подхватывает сквозная линия
+
     const d = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L');
     base.setAttribute('d', d); lit.setAttribute('d', d);
     svg.setAttribute('height', y + 16);
@@ -347,20 +343,18 @@
   let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { build(); if (L > 1){ lit.style.transition = 'none'; lit.style.strokeDashoffset = 0; } }, 150); });
 })();
 
-/* ═════════ ПРЕЛОАДЕР: логотип-глитч → вспышка → Hero ═════════ */
 (() => {
   const pl = document.getElementById('preloader'); if (!pl) return;
   const core = document.getElementById('plCore'), src = document.querySelector('header .dv-logo');
-  // клонируем логотип из шапки (без копии SVG-пути в разметке); cls-1/cls-2 и заливки наследуются
+
   if (src && core){ const c = src.cloneNode(true); c.setAttribute('class', 'pl-logo'); c.removeAttribute('aria-label'); core.insertBefore(c, core.firstChild); }
-  // сразу в дело, без спокойного старта: логотип → burst → вспышка → уход; дальше сцена+boot доигрывают, заголовок проявляется позже
+
   setTimeout(() => pl.classList.add('pl-burst'), 260);
   setTimeout(() => pl.classList.add('pl-flash-on'), 520);
   setTimeout(() => pl.classList.add('pl-gone'), 700);
   setTimeout(() => pl.remove(), 1200);
 })();
 
-/* ═════════ СКВОЗНАЯ ЛИНИЯ: сигнальный «хребет» через все секции (заряжается скроллом) ═════════ */
 (() => {
   const startSec = document.getElementById('method');
   const endSec = document.getElementById('community') || document.querySelector('footer.ft');
@@ -379,11 +373,11 @@
 
   function build(){
     const W = innerWidth, contentW = Math.min(1280, W * 0.86), edge = W / 2 + contentW / 2, gutter = W - edge;
-    if (W <= 1200 || gutter < 130){ wrap.style.display = 'none'; return; }   // нет места в поле — прячем
+    if (W <= 1200 || gutter < 130){ wrap.style.display = 'none'; return; }
     wrap.style.display = '';
     const methodEl = startSec.querySelector('.method');
-    topY = startSec.offsetTop + (methodEl ? methodEl.offsetTop : 70) + 14;     // от трассы «Метода»
-    H = Math.max(200, endSec.offsetTop - topY);                                 // до красной секции «Сообщество»
+    topY = startSec.offsetTop + (methodEl ? methodEl.offsetTop : 70) + 14;
+    H = Math.max(200, endSec.offsetTop - topY);
     wrap.style.top = topY + 'px'; wrap.style.height = H + 'px';
     svg.setAttribute('width', W); svg.setAttribute('height', H); svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     const gx = edge + Math.min(gutter * 0.55, 96), corner = gx - edge;
@@ -391,30 +385,27 @@
     pins.forEach(p => p.el.remove()); pins = [];
     branches.forEach(b => { b.path.remove(); if (b.ring) b.ring.remove(); }); branches = [];
 
-    // СТВОЛ: ПРАВЫЙ КРАЙ кольца «Релиз» → горизонталь к краю контента → 45° → прямой вертикальный ствол вниз
     const pinsM = startSec.querySelectorAll('.node .pin');
     let relX = edge, relR = 14;
     if (pinsM.length){ const rr = pinsM[pinsM.length - 1].getBoundingClientRect(); relX = rr.left + rr.width / 2; relR = rr.width / 2; }
-    const startX = relX + relR + 2;                                              // линия выходит ПОСЛЕ кольца (от его правого края), а не сквозь него
+    const startX = relX + relR + 2;
     const hasLead = startX < edge - 2;
     const mainPts = hasLead ? [[startX, 0], [edge, 0], [gx, corner]] : [[edge, 0], [gx, corner]];
-    mainPts.push([gx, H]);                                                       // вертикальный ствол до терминала
+    mainPts.push([gx, H]);
     const dd = 'M' + mainPts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L');
     base.setAttribute('d', dd); lit.setAttribute('d', dd);
     L = lit.getTotalLength(); lit.style.strokeDasharray = L;
-    pins.push({ el: mkPin(gx, H), frac: 1 });                                    // кольцо-терминал у красной секции
+    pins.push({ el: mkPin(gx, H), frac: 1 });
 
-    // длина вдоль ствола — чтобы ветвь зажигалась строго ПОСЛЕ прохода линии (а не по координате Y)
-    const lenToCorner = (hasLead ? edge - startX : 0) + corner * Math.SQRT2;     // путь до точки (gx, corner)
+    const lenToCorner = (hasLead ? edge - startX : 0) + corner * Math.SQRT2;
     const total = (lenToCorner + (H - corner)) || L;
     const fracAt = vy => Math.min(1, (lenToCorner + (vy - corner)) / total + 0.012);
 
-    // ВЕТВИ — ДЕТЕРМИНИРОВАННЫЙ алгоритм (без рандома): строго 45° и вертикали, длина гарантированно влезает в поле ⇒ угол всегда ровно 45°, без пересечений
-    const roomL = corner - 6, roomR = gutter - corner - 6;                       // место слева/справа от ствола в правом поле
-    const D = clamp(Math.min(roomL, roomR), 30, 56);                            // длина диагонали — влезает в обе стороны
-    const STEP = Math.max(150, D * 2 + 56);                                     // шаг развилок > вертикального размаха ветви ⇒ соседние не накладываются
+    const roomL = corner - 6, roomR = gutter - corner - 6;
+    const D = clamp(Math.min(roomL, roomR), 30, 56);
+    const STEP = Math.max(150, D * 2 + 56);
     const path = (a, pts) => { const el = document.createElementNS(NS, 'path'); el.setAttribute('class', 'sp-branch'); el.setAttribute('d', 'M' + a[0].toFixed(1) + ' ' + a[1].toFixed(1) + ' L' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L')); svg.appendChild(el); return el; };
-    // ветвь РИСУЕТСЯ штрихом сверху вниз (как главная линия), а не проявляется прозрачностью; кольцо появляется ПОСЛЕ прохода линии
+
     const addBranch = (el, frac, ring, delay = 0) => {
       const len = el.getTotalLength();
       el.style.strokeDasharray = len; el.style.strokeDashoffset = len;
@@ -424,31 +415,31 @@
       branches.push({ path: el, len, ring: r, frac });
     };
 
-    const TAIL = Math.round(D * 0.5);                                            // обязательный вертикальный загиб вниз перед кольцом
-    const endY = H - (D * 2.5 + 70);                                             // ниже развилки не ставим — ветвь должна целиком влезть до терминала
+    const TAIL = Math.round(D * 0.5);
+    const endY = H - (D * 2.5 + 70);
     let by = corner + 90, k = 0;
     while (by < endY){
-      const dir = (k % 2 === 0) ? -1 : 1;                                        // строгое чередование сторон (и влево, и вправо)
+      const dir = (k % 2 === 0) ? -1 : 1;
       const room = dir > 0 ? roomR : roomL, F = fracAt(by);
-      const f0 = [gx, by], p1 = [gx + dir * D, by + D];                          // отход от ствола — ровно 45°
+      const f0 = [gx, by], p1 = [gx + dir * D, by + D];
       const shape = k % 4;
-      // ПРАВИЛО: после 45° ветвь обязана загнуться ВНИЗ (вертикаль), и только потом ставится кольцо
-      if (shape === 0){                                                          // 45° → короткая вертикаль → кольцо
+
+      if (shape === 0){
         const p2 = [p1[0], p1[1] + TAIL];
         addBranch(path(f0, [p1, p2]), F, p2);
-      } else if (shape === 1){                                                   // 45° → длинная вертикаль → кольцо
+      } else if (shape === 1){
         const p2 = [p1[0], p1[1] + Math.round(D * 0.95)];
         addBranch(path(f0, [p1, p2]), F, p2);
-      } else if (shape === 2 && room >= 2 * D){                                  // 45° → ещё 45° → вертикаль → кольцо (если хватает поля)
+      } else if (shape === 2 && room >= 2 * D){
         const p2 = [p1[0] + dir * D, p1[1] + D], p3 = [p2[0], p2[1] + TAIL];
         addBranch(path(f0, [p1, p2, p3]), F, p3);
-      } else {                                                                   // РАЗДВОЕНИЕ (Y): общий 45°, затем две ветки — каждая с вертикальным загибом перед кольцом
+      } else {
         const V = Math.round(D * 0.7), Ein = Math.round(D * 0.55);
-        addBranch(path(f0, [p1]), F, null);                                      // общий стебель (45°, без кольца)
+        addBranch(path(f0, [p1]), F, null);
         const a2 = [p1[0], p1[1] + V];
-        addBranch(path(p1, [a2]), F, a2, 0.5);                                   // ветка A: вертикаль → кольцо (отрисуется после стебля)
+        addBranch(path(p1, [a2]), F, a2, 0.5);
         const b1 = [p1[0] - dir * Ein, p1[1] + Ein], b2 = [b1[0], b1[1] + TAIL];
-        addBranch(path(p1, [b1, b2]), F, b2, 0.5);                               // ветка B: 45° внутрь → вертикаль → кольцо
+        addBranch(path(p1, [b1, b2]), F, b2, 0.5);
       }
       by += STEP; k++;
     }
