@@ -151,13 +151,11 @@
       ctx.filter = 'none';
 
       if (!REDUCED){ const gp = (now % 2600) / 2600; if (gp < 0.12){ const inten = 1 - gp / 0.12, bands = 2 + (Math.random() * 3 | 0); for (let i = 0; i < bands; i++){ const by = n.y - pr + Math.random() * pr * 2, bh = 3 + Math.random() * pr * 0.2, sh = (Math.random() * 2 - 1) * pr * 0.14 * inten, col = Math.random() < 0.62 ? ACC : '#4a7d63'; ctx.save(); ctx.beginPath(); ctx.rect(n.x - pr, by, pr * 2, bh); ctx.clip(); ctx.globalAlpha = aIn; ctx.filter = 'grayscale(1)'; ctx.drawImage(photo, dx0 + sh, dy0, pw, ph); ctx.filter = 'none'; ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = aIn * 0.5 * inten; ctx.fillStyle = col; ctx.fillRect(n.x - pr, by, pr * 2, bh); ctx.restore(); } } }
-      const sw = time * 0.6; ctx.globalAlpha = aIn * e * 0.15; ctx.strokeStyle = ACC; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(n.x + Math.cos(sw) * pr, n.y + Math.sin(sw) * pr); ctx.stroke();
-      ctx.globalAlpha = aIn * e * 0.6; ctx.beginPath(); ctx.arc(n.x + Math.cos(sw) * pr * 0.94, n.y + Math.sin(sw) * pr * 0.94, 2, 0, 6.2832); ctx.fillStyle = ACC; ctx.fill();
       ctx.restore(); ctx.globalAlpha = aIn;
       ctx.beginPath(); ctx.arc(n.x, n.y, pr, 0, 6.2832); ctx.strokeStyle = C.ring; ctx.lineWidth = 1.2; ctx.globalAlpha = aIn * 0.5 * e; ctx.stroke(); ctx.globalAlpha = aIn;
     }
     ctx.beginPath(); ctx.arc(n.x, n.y, R, 0, 6.2832); ctx.strokeStyle = C.ring; ctx.lineWidth = 2.6 + 1.4 * e; ctx.stroke();
-    if (e < 0.97){ ctx.globalAlpha = aIn * (1 - e); ctx.beginPath(); ctx.arc(n.x, n.y, n.r0 * 0.45 * (1 + 0.22 * puls), 0, 6.2832); ctx.fillStyle = ACC; ctx.shadowColor = ACC; ctx.shadowBlur = 8 + 8 * puls; ctx.fill(); ctx.shadowBlur = 0; ctx.beginPath(); ctx.arc(n.x, n.y, R + 3 + 3.5 * puls, 0, 6.2832); ctx.strokeStyle = ACC; ctx.lineWidth = 1.4; ctx.globalAlpha = aIn * (1 - e) * (0.14 + 0.16 * puls); ctx.stroke(); ctx.globalAlpha = aIn; }
+    if (e < 0.97){ ctx.globalAlpha = aIn * (1 - e); ctx.beginPath(); ctx.arc(n.x, n.y, n.r0 * 0.6 * (1 + 0.3 * puls), 0, 6.2832); ctx.fillStyle = ACC; ctx.shadowColor = ACC; ctx.shadowBlur = 12 + 12 * puls; ctx.fill(); ctx.shadowBlur = 0; ctx.beginPath(); ctx.arc(n.x, n.y, R + 5 + 11 * puls, 0, 6.2832); ctx.strokeStyle = ACC; ctx.lineWidth = 1.8; ctx.globalAlpha = aIn * (1 - e) * (0.18 + 0.2 * puls); ctx.stroke(); ctx.globalAlpha = aIn; }
     if (e > 0.02){
       const gA = aIn * e, rot = time * 0.18; ctx.lineWidth = 1.4;
       for (let i = 0; i < 64; i++){ const a2 = rot + i / 64 * 6.2832, long = i % 8 === 0; const r1 = R * 1.03, r2 = R * (long ? 1.13 : 1.08); ctx.beginPath(); ctx.moveTo(n.x + Math.cos(a2) * r1, n.y + Math.sin(a2) * r1); ctx.lineTo(n.x + Math.cos(a2) * r2, n.y + Math.sin(a2) * r2); ctx.strokeStyle = long ? ACC : C.ring; ctx.globalAlpha = gA * (long ? 0.9 : 0.45); ctx.stroke(); }
